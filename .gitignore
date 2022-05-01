@@ -1,0 +1,10 @@
+/src/webservice/__pycache__/*
+/data/sbert_trained_model/*/*
+/data/sbert_trained_model/*
+/data/sbert_trained_model/*.csv
+
+/data/sbert_trained_model_classifier/*/*
+/data/sbert_trained_model_classifier/*
+
+/data/sbert_trained_model_sim_score/*/*
+/data/sbert_trained_model_sim_score/*

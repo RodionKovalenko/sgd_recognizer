@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} About Sustainable development goals recognizer {% endblock %}</h1> <br /> <br />
+
+<ul>
+    <li> This is a graphical test interface for text classification according to the sustainable development goals.
+    </li>
+    <li>
+        Give your text as input and press the button to see, which sustainable goals are recognized
+    </li>
+    <li>
+        Frontend GUI accepts the text and transmits it to the Microservice API, which process the text and gives the 
+        possible SDGs and theier targets.
+    </li>
+</ul>
+
+{% endblock %}

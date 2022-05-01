@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} SDG recognizer {% endblock %}</h1> <br /> <br />
+
+
+ <div class="container" style="text-align: justify;">    
+<form action="/onComparestrings/">
+  <label for="text" style="padding: 0 20px 0 0px;"> Give the text to be recognized according to SDG:</label>
+  <textarea type="text" id="text" name="text" style="width:900px; height: 400px; max-width:100%;" value="{{text}}">{{ text }}   
+  </textarea> 
+  
+  <br><br>
+   
+   <label for="sim_threshold" style="display: inline-block;min-width: 625px;"> Your cosine similarity threshold is (value from 0 to 1): </label>
+   <input type="text" id="sim_threshold" name="sim_threshold" value="{{sim_threshold}}"> <br><br>
+   
+   <label for="recognition_levels" style="display: inline-block;min-width: 625px;"> Choose a recognition level: </label>
+       <select name="recognition_levels" style="width:260px;">    
+    {% for j in recognition_levels %}
+    	<option value="{{j[0]}}" {{j[1]}}>{{j[2]}}</option>
+    {% endfor %}
+   </select>
+   
+  <br><br>
+  
+  <label for="use_gnb" style="display: inline-block;min-width: 625px;"> Use Gaussian Bayes Classifier: </label>
+  <input type="checkbox" name="use_gnb" {{use_gnb_checked}} style="width:25px; height:25px">
+	
+    
+  <br><br>
+  <input type="submit" class="submit-btn" value="Process">
+  
+  <br /> 
+  <br /> 
+  <br /> 
+
+</div>
+
+{% set count = [] %}
+
+{% for sentence, result in sdg_recognizer_result.items() %}  
+<div style="text-align: justify;" >
+    <br /> 
+        {{sentence}}
+    <br />
+    
+    {% set __ = count.append(1) %} 
+    
+    {% for key_sentence, similarity in result.items() %}  
+        {% for class, similarity in similarity.items() %}  
+            <h4> Recognized class: {{class}} </h4>
+            
+            <div class="container" style="text-align: justify;">    
+                <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#class{{count|length}}"> SDG class details</button>
+                <div id="class{{count|length}}" class="collapse in">
+                    <h4> {{similarity}} </h4>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <br />     
+     <hr class="new5">
+     
+</div>
+ 
+{% endfor %}
+
+
+{% endblock %}

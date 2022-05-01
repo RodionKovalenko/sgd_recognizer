@@ -1,0 +1,14 @@
+version: "3.3"
+
+volumes: 
+    product_matching_volume:
+
+services: 
+    web:
+        image: productmatching/product_matching_image
+        restart: always
+        environment:
+            - TZ=Europe/Berlin
+        ports: 
+            - 8080:8080
+
