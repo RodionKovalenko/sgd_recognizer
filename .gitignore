@@ -1,15 +1,17 @@
 /src/webservice/__pycache__/*
-/save_model/sbert_trained_sdg_sim_score/*/*
-/save_model/sbert_trained_sdg_sim_score/*
-/save_model/sbert_trained_sdg_sim_score/*.csv
 
 /save_model/sbert_generic_pretrained/*/*
 /save_model/sbert_generic_pretrained/*
 /save_model/sbert_generic_pretrained/*.csv
+/save_model/sbert_generic_pretrained/*/*.txt
 /save_model/sbert_generic_pretrained/*.json
 /save_model/sbert_generic_pretrained/*.bin
+/saved_model/sbert_generic_pretrained/*/*.json
+/saved_model/sbert_generic_pretrained/*/*.bin
 
 /saved_model/sbert_trained_sdg_sim_score/*/*
 /save_model/sbert_trained_sdg_sim_score/*
 /save_model/sbert_trained_sdg_sim_score/*.json
 /save_model/sbert_trained_sdg_sim_score/*.bin
+/saved_model/sbert_trained_sdg_sim_score/*/*.json
+/saved_model/sbert_trained_sdg_sim_score/*/*.bin
