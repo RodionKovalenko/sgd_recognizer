@@ -14,15 +14,15 @@ import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MultiLabelBinarizer
 from os import path
-import pathlib
-import os 
 from sklearn.metrics import multilabel_confusion_matrix
 from sklearn.metrics import classification_report
 
+from pathlib import Path
+
 class Gnb():
-    def __init__(self):
-        current_abs_path = str(pathlib.Path(__file__).parent.resolve())
-        self.saved_model_dir = current_abs_path + '\\..\\..\\saved_model\\gnbOneVsRest.pickle'    
+    def __init__(self):        
+        current_abs_path = str(Path(__file__).resolve().parent.parent.parent)
+        self.saved_model_dir = current_abs_path + '/saved_model/gnb.pickle'    
            
         if path.exists(self.saved_model_dir):
              print("saved gnb model exists")
@@ -33,7 +33,7 @@ class Gnb():
             self.model = OneVsRestClassifier(GaussianNB())
             print("saved model gnb cannot not found")
             
-        self.saved_label_binarizer_dir = current_abs_path + '\\..\\..\\saved_model\\multi_label_binarizer.pickle'
+        self.saved_label_binarizer_dir = current_abs_path + '/saved_model/multi_label_binarizer.pickle'
         
         if path.exists(self.saved_label_binarizer_dir):
              print("saved multilabel_binarizer model exists")
@@ -104,33 +104,45 @@ class Gnb():
          predicted_classes_x = []
          expected_classes_y = []
             
-         index_with_one =  np.where(self.model.predict(embedding)[0] == 1)
-         class_probabilities = self.model.predict_proba(embedding)
-         predicted_classes = self.multilabel_binarizer.inverse_transform(self.model.predict(embedding))
+         # index_with_one = np.where(self.model.predict(embedding)[0] == 1)
+         # class_probabilities = self.model.predict_proba(embedding)
+         # predicted_classes = self.multilabel_binarizer.inverse_transform(self.model.predict(embedding))
          
-         predicted_classes_selected = {}
+         # predicted_classes_selected = {}
             
-         for index, value in enumerate(index_with_one):     
-            if len(value):
-                label_index = value[index]
+         # for index, value in enumerate(index_with_one):     
+         #    if len(value):
+         #        label_index = value[index]
            
-                if class_probabilities[0][label_index] >= threshold_probability:
-                  predicted_classes_selected[predicted_classes[0][index]] = [class_probabilities[0][label_index]]
+         #        if class_probabilities[0][label_index] >= threshold_probability:
+         #          predicted_classes_selected[predicted_classes[0][index]] = [class_probabilities[0][label_index]]
                      
-         if len(predicted_classes_selected) != 0:
-            predicted_classes_x.append(list(predicted_classes_selected.copy().keys()))
+         # if len(predicted_classes_selected) != 0:
+         #    predicted_classes_x.append(list(predicted_classes_selected.copy().keys()))
 
-         if len(y) != 0:
-            if isinstance(y[i][0], list):
-                expected_classes_y.append(y[i][0])
-            else:
-                expected_classes_y.append([y[i][0]])
+         # if len(y) != 0:
+         #    if isinstance(y[i][0], list):
+         #        expected_classes_y.append(y[i][0])
+         #    else:
+         #        expected_classes_y.append([y[i][0]])
             
-         if verbose and len(y) > 0:
-            print('predicted classes {}'.format(predicted_classes_selected)) 
-            print('actual {}'.format(y[i]))
-            print('----------------------------------------------')
-                
+         # if verbose and len(y) > 0:
+         #    print('predicted classes {}'.format(predicted_classes_selected)) 
+         #    print('actual {}'.format(y[i]))
+         #    print('----------------------------------------------')
+         predicted_classes_x = self.model.predict(embedding)
+         probability_pred = self.model.predict_proba(embedding)               
+                  
+         indexes_of_predicted = np.where(self.model.classes_ == predicted_classes_x)
+           
+         if indexes_of_predicted:
+             probability = probability_pred[0][indexes_of_predicted[0][0]]
+             print('probability {}'.format(probability_pred[0][indexes_of_predicted[0][0]]))
+             if probability and probability < 1.0:
+                 predicted_classes_x = [[]]
+         # predicted_classes_x = self.multilabel_binarizer.inverse_transform(predicted_classes_x)
+         print('predicted class{}'.format(predicted_classes_x))
+        
          return predicted_classes_x, expected_classes_y
                 
     def evaluate(self, X, y, threshold_probability = 0.99, stop_limit = 30, verbose=False):

@@ -6,13 +6,21 @@
 from flask_restful import Resource
 from sentence_transformers import SentenceTransformer, util
 import numpy as np
+from pathlib import Path
+from os import path
 
 class Sbert(Resource):
     def __init__(self):
-        self.model = SentenceTransformer('Rodion/sbert_uno_sustainable_development_goals')
-        print('finetuned sbert is downloaded')
+        current_abs_path = str(Path(__file__).resolve().parent.parent.parent)
+        self.saved_model_dir = current_abs_path + '/saved_model/sbert_trained_sdg_sim_score'    
+        
+        if path.exists(self.saved_model_dir):
+            self.model = SentenceTransformer(self.saved_model_dir)
+            print("saved finetuned sbert model exists")         
+        else:
+            self.model = SentenceTransformer('Rodion/sbert_uno_sustainable_development_goals')
+            print('finetuned sbert is downloaded')
       
-
     def calculate_match(self, sentences):
         # https://www.sbert.net/
 

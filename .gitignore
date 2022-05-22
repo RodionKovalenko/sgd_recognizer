@@ -1,4 +1,8 @@
-/src/webservice/__pycache__/*
+**/__pycache__
+
+**/__pycache__/*
+**/sbert_generic_pretrained
+**/sbert_trained_sdg_sim_score
 
 /save_model/sbert_generic_pretrained/*/*
 /save_model/sbert_generic_pretrained/*
@@ -15,3 +19,6 @@
 /save_model/sbert_trained_sdg_sim_score/*.bin
 /saved_model/sbert_trained_sdg_sim_score/*/*.json
 /saved_model/sbert_trained_sdg_sim_score/*/*.bin
+/src/gnb/__pycache__/one_vs_all_gnb.cpython-38.pyc
+/src/embedding/__pycache__/sbert_generic_pretrained.cpython-38.pyc
+/src/embedding/__pycache__/sbert_finetuned.cpython-38.pyc

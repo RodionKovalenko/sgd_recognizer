@@ -1,15 +1,15 @@
 # fuer mehr info lest https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-#layer which our project product matching will use
+#layer which our project will use
 FROM python:3.6
 
-#create directory with folder "product_matching_app" where out application will run
-RUN mkdir -p /product_matching_app/
+#create directory with folder "SDG-RECOGNIZER" where out application will run
+RUN mkdir -p /SDG-RECOGNIZER/
 
 #specify working directory
-WORKDIR /product_matching_app/
+WORKDIR /SDG-RECOGNIZER/
 
-#copy all content in current project directory to the created directory "product_matching_app"
-COPY . /product_matching_app/
+#copy all content in current project directory to the created directory "SDG-RECOGNIZER"
+COPY . /SDG-RECOGNIZER/
 
 #install dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt

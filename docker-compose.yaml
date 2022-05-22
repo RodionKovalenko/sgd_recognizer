@@ -1,11 +1,11 @@
 version: "3.3"
 
 volumes: 
-    product_matching_volume:
+    sdg_recognize_volume:
 
 services: 
     web:
-        image: productmatching/product_matching_image
+        image: jlrbawe/sdg_recognizer_image
         restart: always
         environment:
             - TZ=Europe/Berlin

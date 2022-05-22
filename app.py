@@ -1,11 +1,7 @@
 import os
-import json
-import datetime
 from flask import Flask
-from flask import render_template, make_response, Response, request
-from flask_restful import Resource, Api, reqparse
-from sklearn.metrics import calinski_harabasz_score
-import json
+from flask import render_template, request
+from flask_restful import Api
 
 from src.webservice import sdg_classifier
 
@@ -26,7 +22,7 @@ def start_app():
                            sdg_recognizer_result={},
                            sim_threshold=0.6,
                            recognition_levels=recognition_levels,
-                           use_gnb_checked = 'checked'
+                           use_gnb_checked = ''
                            )
 
 
@@ -82,7 +78,7 @@ def on_compare_strings_action():
 api.add_resource(sgd_clf, '/api/v1/comparestrings', endpoint='sdg_claffier')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=False)
 
 
 

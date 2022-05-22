@@ -8,6 +8,8 @@ from src.sdg import sdg_target_list
 from src.sdg import sdg_list
 
 from src.gnb import one_vs_all_gnb
+import nltk
+nltk.download('punkt')
 
 class Sgd_Classifier(Resource):
     def get_numpy_dataset(self, X):
@@ -30,7 +32,7 @@ class Sgd_Classifier(Resource):
         
         self.sdg_target_map = dict()
         sdg_target_goals = sdg_list.goals
-        sdg_target_tuples = [target_tuple for array_item in np.array(sdg_target_list.targets) for target_tuple in array_item]
+        sdg_target_tuples = [target_tuple for array_item in np.array(sdg_target_list.targets, dtype='object') for target_tuple in array_item]
         
         for sdg_goal, sdg_text in sdg_target_goals:
             self.sdg_target_map.setdefault(sdg_goal, []).append(sdg_text)
@@ -47,8 +49,11 @@ class Sgd_Classifier(Resource):
     def predict_by_gnb(self, raw_text, encode = True):
         embedding = raw_text
         
+        # if encode:
+        #     embedding = self.get_concatencated_sbert_embedding(raw_text)
+        
         if encode:
-            embedding = self.get_concatencated_sbert_embedding(raw_text)
+          embedding = self.sbert_finetuned.embed(raw_text)
             
         predicted_classes, expected_classes = self.gnb.predict_classes(embedding.reshape((1, -1)))
         return predicted_classes
@@ -76,14 +81,15 @@ class Sgd_Classifier(Resource):
         if encode and recog_level == 1:
             sentences = tokenize.sent_tokenize(raw_text)
             
-        if  encode and raw_text and recog_level == 2:
-            sentences = raw_text.split('\n')
+        if encode and raw_text and recog_level == 2:     
+            raw_text =  raw_text.replace("\n\n" , "¾")
+            sentences = raw_text.split("¾")
             
         for sentence in sentences:
             cosine_similarity = self.predict_by_cos_sim(sentence, encode)
             
             if use_gnb:
-                gnb_pred_classes = self.predict_by_gnb(sentence, encode)
+                gnb_pred_classes = np.array(self.predict_by_gnb(sentence, encode)).ravel()
                 
             best_five_classes = list(cosine_similarity.items())[-3:]
             selected_classes = {}
@@ -93,29 +99,26 @@ class Sgd_Classifier(Resource):
                     if encode == False: 
                         sentence = str(value[0])
                 
-                    key = str(value[0])
-                    value = self.sdg_target_map[str(value[0])][0] + ', similarity measure: ' + str(value[1])
+                    key = str(value[0]) + ', predicted by SBERT, similarity value: ' + str(value[1])
+                    value = self.sdg_target_map[str(value[0])][0] + ', predicted by SBERT, similarity value: ' + str(value[1])
                     
                     selected_classes[sentence] = {key: value}
-            
-          
-              # if Gaussian Naive Bayes has no prediction or contains value '0' return 0
-            if use_gnb and ('0' in gnb_pred_classes or 0 in gnb_pred_classes):
-                selected_classes['naive bayes'] = {'result' : 0}
+                      
              
             if selected_classes:
                 sentence_to_classes_map[sentence] = selected_classes
                 
             
-            print('predicted gnb {}'.format(gnb_pred_classes))
-            if use_gnb and len(gnb_pred_classes) > 0 and any('0' in sublist for sublist in gnb_pred_classes) == False:                
-                sdg_class_text = self.sdg_target_map[str(gnb_pred_classes[0][-1])][0]
-                sdg_class = gnb_pred_classes[0][-1]
+            # if use_gnb and len(gnb_pred_classes) > 0 and any('0' in sublist for sublist in gnb_pred_classes) == False:
+            if use_gnb and gnb_pred_classes and '0' not in gnb_pred_classes:
+                # sdg_class_text = self.sdg_target_map[str(gnb_pred_classes[0][-1])][0]
+                sdg_class_text = self.sdg_target_map[str(gnb_pred_classes[-1])][0]
+                # sdg_class = gnb_pred_classes[0][-1]
+                sdg_class = gnb_pred_classes[-1] + ', Predicted by Gaussian Naive Bayes'
 
-                print('sdg text {}'.format(sdg_class_text))
-                print('sgd_class {}'.format(sdg_class))
-                if sentence not in sentence_to_classes_map.keys():
-                    sentence_to_classes_map[sentence] = {sdg_class: {sdg_class : sdg_class_text}}
+                if len(sentence_to_classes_map) == 0 or sentence not in sentence_to_classes_map.keys():
+                    value = sdg_class_text + ' Predicted by Gaussian Naive Bayes'
+                    sentence_to_classes_map[str(sentence)] = {sdg_class: {sdg_class: value}}
         
         
         return sentence_to_classes_map
