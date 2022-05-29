@@ -33,7 +33,7 @@ def about_action():
 # when Button "Vergleich" is clicked
 
 
-@app.route("/onComparestrings/", methods=['GET', 'POST'])
+@app.route("/recognize_sdg/", methods=['GET', 'POST'])
 def on_compare_strings_action():
     text_to_recognize = request.args.get('text')[:]
     sim_threshold = request.args.get('sim_threshold')[:]
@@ -56,9 +56,7 @@ def on_compare_strings_action():
                                                                sim_threshold,
                                                                recognition_level,
                                                                use_gnb)
-    
-    print('recognized result {}'.format(sdg_recognizer_result))
-    
+        
     if not sim_threshold or (sim_threshold and float(sim_threshold) > 1):
         sim_threshold = sgd_clf.cos_sim_threshold
     if use_gnb:
@@ -75,10 +73,10 @@ def on_compare_strings_action():
 
 
 # Sbert API
-api.add_resource(sgd_clf, '/api/v1/comparestrings', endpoint='sdg_claffier')
+api.add_resource(sgd_clf, '/api/v1/recognize_sdg', endpoint='sdg_claffier')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=False)
+    app.run(host="0.0.0.0", port=4200, debug=False)
 
 
 

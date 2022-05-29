@@ -3,6 +3,7 @@ import pandas as pd
 from flask_restful import Resource
 from nltk import tokenize
 
+from flask import Flask, json, make_response, request
 from src.embedding import sbert_finetuned, sbert_generic_pretrained
 from src.sdg import sdg_target_list
 from src.sdg import sdg_list
@@ -12,6 +13,38 @@ import nltk
 nltk.download('punkt')
 
 class Sgd_Classifier(Resource):
+    
+    def get(self):
+        text_to_recognize = request.args.get('text')
+        sim_threshold = request.args.get('sim_threshold')
+        use_gnb = request.args.get('use_gnb')
+        recognition_level = request.args.get('recognition_levels')
+        
+        if recognition_level:
+            recognition_level = int(request.args.get('recognition_levels'))
+        else: 
+            recognition_level = 1
+            
+        if use_gnb:
+            use_gnb = True
+        else: 
+            use_gnb = False
+            
+        recognition_levels = [[1, '', 'Sentence'], [2, '', 'Paragraph'], [3, '', 'Text']]
+        
+        if recognition_level == 1:
+            recognition_levels[0][1] = 'selected'
+        elif recognition_level == 2:
+            recognition_levels[1][1] = 'selected'
+        elif recognition_level ==3:
+             recognition_levels[2][1] = 'selected'
+        if text_to_recognize:
+            text_to_recognize = text_to_recognize.strip()          
+        
+        response = self.predict_by_gnb_and_cos_sim(text_to_recognize, True, sim_threshold, recognition_level, use_gnb)
+        
+        return {"Result": json.dumps(response)}
+    
     def get_numpy_dataset(self, X):
         data = []
         for sentence_vec in X:
@@ -43,7 +76,7 @@ class Sgd_Classifier(Resource):
         self.gnb = one_vs_all_gnb.Gnb()
             
     def get_concatencated_sbert_embedding(self, raw_text):
-        embedding = np.add(self.sbert_finetuned.embed(raw_text), self.sbert_generic.embed(raw_text)) / 2.0
+        embedding = self.sbert_finetuned.embed(raw_text)
         return embedding
     
     def predict_by_gnb(self, raw_text, encode = True):

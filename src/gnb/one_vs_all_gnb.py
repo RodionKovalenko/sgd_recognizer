@@ -137,11 +137,9 @@ class Gnb():
            
          if indexes_of_predicted:
              probability = probability_pred[0][indexes_of_predicted[0][0]]
-             print('probability {}'.format(probability_pred[0][indexes_of_predicted[0][0]]))
              if probability and probability < 1.0:
                  predicted_classes_x = [[]]
          # predicted_classes_x = self.multilabel_binarizer.inverse_transform(predicted_classes_x)
-         print('predicted class{}'.format(predicted_classes_x))
         
          return predicted_classes_x, expected_classes_y
                 
